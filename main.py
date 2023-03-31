@@ -16,6 +16,10 @@ html = f"""
     <body>
         <div class="bg-gray-200 p-4 rounded-lg shadow-lg">
             <h1>Hello from FastAPI@{__version__}</h1>
+            <ul>
+                <li><a href="/docs">/docs</a></li>
+                <li><a href="/redoc">/redoc</a></li>
+            </ul>
             <p>Powered by <a href="https://vercel.com" target="_blank">Vercel</a></p>
         </div>
     </body>
