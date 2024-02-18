@@ -1,35 +1,74 @@
-from time import time
-from fastapi import FastAPI, __version__
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI
+from typing import List
+from pydantic import BaseModel
 
+# Definir el modelo de datos utilizando Pydantic
+class Position(BaseModel):
+    description: str
+    position: float
+    avgCost: float
+    marketPrice: float
+    marketValue: float
+    realizedPnl: float
+    unrealizedPnl: float
+    sector: str = None
+    group: str = None
+
+# Crear una instancia de la aplicación FastAPI
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
-html = f"""
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>FastAPI on Vercel</title>
-        <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
-    </head>
-    <body>
-        <div class="bg-gray-200 p-4 rounded-lg shadow-lg">
-            <h1>Hello from FastAPI@{__version__}</h1>
-            <ul>
-                <li><a href="/docs">/docs</a></li>
-                <li><a href="/redoc">/redoc</a></li>
-            </ul>
-            <p>Powered by <a href="https://vercel.com" target="_blank">Vercel</a></p>
-        </div>
-    </body>
-</html>
-"""
+# Datos de ejemplo
+positions_data = [
+    {
+        "description": "AMZN",
+        "position": 0.5946,
+        "avgCost": 160.54,
+        "marketPrice": 168.77,
+        "marketValue": 100.35,
+        "realizedPnl": 0.0,
+        "unrealizedPnl": 4.89,
+        "sector": "Communications",
+        "group": "Internet"
+    },
+    {
+        "description": "BABA",
+        "position": 3.0708,
+        "avgCost": 121.98,
+        "marketPrice": 73.82,
+        "marketValue": 226.69,
+        "realizedPnl": 0.0,
+        "unrealizedPnl": -147.90,
+        "sector": "Communications",
+        "group": "Internet"
+    },
+    # Agrega más datos de ejemplo aquí si es necesario
+]
 
-@app.get("/")
-async def root():
-    return HTMLResponse(html)
 
-@app.get('/ping')
-async def hello():
-    return {'res': 'pong', 'version': __version__, "time": time()}
+
+
+# Definir una ruta para procesar los datos JSON
+
+
+
+@app.post("/process_positions/")
+async def process_positions(positions: List[Position]):
+    processed_data = []
+    for pos in positions:
+        # Aquí puedes realizar cualquier procesamiento adicional necesario
+        processed_data.append({
+            "Description": pos.description,
+            "Position": pos.position,
+            "Average Cost": pos.avgCost,
+            "Market Price": pos.marketPrice,
+            "Market Value": pos.marketValue,
+            "Realized PnL": pos.realizedPnl,
+            "Unrealized PnL": pos.unrealizedPnl,
+            "Sector": pos.sector,
+            "Group": pos.group
+        })
+    return {"processed_data": processed_data, "original_data": positions}
+
+@app.get("/positions/", response_model=List[Position])
+async def get_positions():
+    return positions_data
